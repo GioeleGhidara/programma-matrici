@@ -26,6 +26,7 @@ int main(void)
         printf("1. Scrivere le matrici\n");
         printf("2. Prendere le matrici da file\n");
         printf("3. Rango\n");
+        printf("4. Determinante\n");
         printf("0. Esci\n");
 
         scanf("%d", &choice1);
@@ -107,6 +108,49 @@ int main(void)
                 free(r);
                 break;
             // 
+            case 4: /* CALCOLO DETERMINANTE */
+                printf("Di quale file vuoi calcolare il determinante della matrice? ");
+                scanf("%s", fileName1);
+
+                int *d = readMatrixFromFile(fileName1, &r1, &c1);
+
+                if (!test(d)) {
+                    printf("Matrice nel file '%s' non trovata o formato non valido.\n", fileName1);
+                } else {
+                    int **matrix = (int **)malloc(r1 * sizeof(int *));
+                    if (matrix == NULL) {
+                        printf("Errore nell'allocazione di memoria.\n");
+                        exit(1);
+                    }
+                    for (int i = 0; i < r1; i++) {
+                        matrix[i] = (int *)malloc(c1 * sizeof(int));
+                        if (matrix[i] == NULL) {
+                            printf("Errore nell'allocazione di memoria.\n");
+                            exit(1);
+                        }
+                    }
+
+                    for (int i = 0; i < r1; i++) {
+                        for (int j = 0; j < c1; j++) {
+                            matrix[i][j] = d[i * c1 + j];
+                        }
+                    }
+
+                    // Calculate determinant here
+                    double det = determinant(matrix, r1); // Assuming you have a function to calculate determinant
+
+                    printf("Il determinante della matrice nel file '%s' è %.2f.\n", fileName1, det);
+
+                    // Free memory
+                    for (int i = 0; i < r1; i++) {
+                        free(matrix[i]);
+                    }
+                    free(matrix);
+                }
+
+                free(d);
+                break;
+
             case 0:
                 printf("Uscita dal programma.\n");
                 break;
