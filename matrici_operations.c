@@ -15,6 +15,7 @@ int test(int *m);
 int main(void)
 {
     int r1, c1, r2, c2;
+    char fileNameM[20] = {0};
     char fileName1[20], fileName2[20];
     char productFile[20], sumFile[20];
     int *m1, *m2;
@@ -23,7 +24,7 @@ int main(void)
 
     while (choice1!= 0) {
         printf("Quali operazioni vuoi fare?\n");
-        printf("1. Scrivere le matrici\n");
+        printf("1. Scrivere le matrici in un file\n");
         printf("2. Prendere le matrici da file\n");
         printf("3. Rango\n");
         printf("4. Determinante\n");
@@ -37,10 +38,7 @@ int main(void)
             case 1:         /* INSERIMENTO MANUALE MATRICI */
                 printf("Inserisci il numero di righe e colonne della prima matrice: ");
                 scanf("%d %d", &r1, &c1);
-                printf("Inserisci il numero di righe e colonne della seconda matrice: ");
-                scanf("%d %d", &r2, &c2);
                 m1 = malloc(r1 * c1 * sizeof(int));
-                m2 = malloc(r2 * c2 * sizeof(int));
                 printf("Inserisci la prima matrice:\n");
                 for (int i = 0; i < r1; i++)
                 {
@@ -49,19 +47,11 @@ int main(void)
                         scanf("%d", &m1[i * c1 + j]);
                     }
                 }
+                printf("In quale file vuoi salvarla?\n");
+                scanf("%s", fileNameM);
 
-                writeMatrixToFile(m1, "m1.txt", r1, c1);
+                writeMatrixToFile(m1, fileNameM, r1, c1);
 
-                printf("Inserisci la seconda matrice:\n");
-                for (int i = 0; i < r2; i++)
-                {
-                    for (int j = 0; j < c2; j++)
-                    {
-                        scanf("%d", &m2[i * c2 + j]);
-                    }
-                }
-
-                writeMatrixToFile(m2, "m2.txt", r2, c2);
                 break;
             //
             case 2:               /* INSERIMENTO MATRICI DA FILE */
@@ -88,6 +78,8 @@ int main(void)
                 /* Assagnazione della matrici lette dai file ad m1 e m2 */
                 m1 = mA;
                 m2 = mB;
+                break;
+
             case 3:
             /* RANGO */
                 printf("Di quale file vuoi calcolare il rango della matrice? ");
@@ -102,55 +94,12 @@ int main(void)
                 else
                 {
                     int rank = calculateRank(r, r1, c1);
-                    printf("\nIl rango della matrice nel file '%s' è %d.\n\n\n", fileName1, rank);
+                    printf("\nIl rango della matrice nel file '%s' è %d.\n\n", fileName1, rank);
                 }
 
                 free(r);
                 break;
             // 
-            case 4: /* CALCOLO DETERMINANTE */
-                printf("Di quale file vuoi calcolare il determinante della matrice? ");
-                scanf("%s", fileName1);
-
-                int *d = readMatrixFromFile(fileName1, &r1, &c1);
-
-                if (!test(d)) {
-                    printf("Matrice nel file '%s' non trovata o formato non valido.\n", fileName1);
-                } else {
-                    int **matrix = (int **)malloc(r1 * sizeof(int *));
-                    if (matrix == NULL) {
-                        printf("Errore nell'allocazione di memoria.\n");
-                        exit(1);
-                    }
-                    for (int i = 0; i < r1; i++) {
-                        matrix[i] = (int *)malloc(c1 * sizeof(int));
-                        if (matrix[i] == NULL) {
-                            printf("Errore nell'allocazione di memoria.\n");
-                            exit(1);
-                        }
-                    }
-
-                    for (int i = 0; i < r1; i++) {
-                        for (int j = 0; j < c1; j++) {
-                            matrix[i][j] = d[i * c1 + j];
-                        }
-                    }
-
-                    // Calculate determinant here
-                    double det = determinant(matrix, r1); // Assuming you have a function to calculate determinant
-
-                    printf("Il determinante della matrice nel file '%s' è %.2f.\n", fileName1, det);
-
-                    // Free memory
-                    for (int i = 0; i < r1; i++) {
-                        free(matrix[i]);
-                    }
-                    free(matrix);
-                }
-
-                free(d);
-                break;
-
             case 0:
                 printf("Uscita dal programma.\n");
                 break;
